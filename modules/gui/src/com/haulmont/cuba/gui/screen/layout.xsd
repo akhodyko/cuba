@@ -263,6 +263,21 @@
         </xs:restriction>
     </xs:simpleType>
 
+    <xs:simpleType name="notificationPositionEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="DEFAULT"/>
+            <xs:enumeration value="TOP_RIGHT"/>
+            <xs:enumeration value="TOP_LEFT"/>
+            <xs:enumeration value="TOP_CENTER"/>
+            <xs:enumeration value="MIDDLE_RIGHT"/>
+            <xs:enumeration value="MIDDLE_LEFT"/>
+            <xs:enumeration value="MIDDLE_CENTER"/>
+            <xs:enumeration value="BOTTOM_RIGHT"/>
+            <xs:enumeration value="BOTTOM_LEFT"/>
+            <xs:enumeration value="BOTTOM_CENTER"/>
+        </xs:restriction>
+    </xs:simpleType>
+
     <xs:simpleType name="orientation">
         <xs:restriction base="xs:string">
             <xs:enumeration value="horizontal"/>
@@ -994,7 +1009,7 @@
     <xs:simpleType name="columnsMode">
         <xs:restriction>
             <xs:enumeration value="ONE_COLUMN"/>
-            <xs:enumeration value="TWO_COLUMN"/>
+            <xs:enumeration value="TWO_COLUMNS"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -2422,10 +2437,13 @@
 
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attributeGroup ref="hasCaptionSource"/>
 
                 <xs:attribute name="multiselect" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="treeSelectionMode"/>
+
+                <xs:attribute name="contentMode" type="contentMode"/>
 
                 <xs:attribute name="rowHeight" type="xs:double"/>
 
@@ -2627,6 +2645,7 @@
                 </xs:all>
 
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
                 <xs:attribute name="stylename" type="tableStylename"/>
                 <xs:attribute name="metaClass" type="xs:string"/>
                 <xs:attributeGroup ref="isTableComponent"/>
@@ -2754,6 +2773,7 @@
             <xs:extension base="dataGridComponent">
                 <xs:attribute name="hierarchyProperty" type="xs:string"/>
                 <xs:attribute name="hierarchyColumn" type="xs:string"/>
+                <xs:attribute name="showOrphans" type="xs:boolean"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -3535,7 +3555,7 @@
 
         <xs:attribute name="contentMode" type="notificationContentMode"/>
         <xs:attribute name="styleName" type="xs:string"/>
-        <xs:attribute name="position" type="align"/>
+        <xs:attribute name="position" type="notificationPositionEnum"/>
 
         <xs:attributeGroup ref="facetTriggerType"/>
 
@@ -3600,7 +3620,7 @@
                     <xs:element name="actions" type="dialogActionsType" minOccurs="0"/>
                 </xs:sequence>
 
-                <xs:attribute name="defaultActions" type="inputDialogActionsType"/>
+                <xs:attribute name="dialogActions" type="inputDialogActionsType"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

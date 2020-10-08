@@ -419,8 +419,8 @@ public class RdbmsStore implements DataStore {
             EntityManager em = persistence.getEntityManager(storeName);
             checkPermissions(context);
 
-            if (!context.isSoftDeletion())
-                em.setSoftDeletion(false);
+            boolean softDeletionBefore = em.isSoftDeletion();
+            em.setSoftDeletion(context.isSoftDeletion());
 
             List<BaseGenericIdEntity> entitiesToStoreDynamicAttributes = new ArrayList<>();
 
@@ -530,6 +530,8 @@ public class RdbmsStore implements DataStore {
                 }
             }
 
+            em.setSoftDeletion(softDeletionBefore);
+
             if (!context.isDiscardCommitted() && isAuthorizationRequired(context) && userSessionSource.getUserSession().getConstraints().exists()) {
                 security.calculateFilteredData(saved);
             }
@@ -549,7 +551,7 @@ public class RdbmsStore implements DataStore {
                 }
 
                 for (Entity entity : saved) {
-                    em.detach(entity);
+                    detachEntity(em, entity, getViewFromContext(context, entity));
                 }
 
                 entityChangedEventManager.publish(events);

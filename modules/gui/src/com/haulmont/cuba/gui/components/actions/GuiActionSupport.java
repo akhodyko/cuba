@@ -28,6 +28,7 @@ import com.haulmont.cuba.gui.actions.picker.LookupAction;
 import com.haulmont.cuba.gui.actions.picker.OpenAction;
 import com.haulmont.cuba.gui.components.data.meta.EntityValueSource;
 import com.haulmont.cuba.gui.components.data.ValueSource;
+import com.haulmont.cuba.gui.components.data.value.DatasourceValueSource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.dynamicattributes.DynamicAttributesGuiTools;
 import com.haulmont.cuba.gui.screen.compatibility.LegacyFrame;
@@ -106,40 +107,47 @@ public class GuiActionSupport {
                 .get("actions");
         if (actionIds != null && actionIds.length > 0) {
             for (String actionId : actionIds) {
-                if (pickerField.getFrame() != null
-                        && pickerField.getFrame().getFrameOwner() instanceof LegacyFrame) {
-
-                    // in legacy screens
-                    for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
-                        if (actionType.getId().equals(actionId.trim())) {
-                            pickerField.addAction(actionType.createAction(pickerField));
-                            break;
-                        }
-                    }
-                } else {
-
-                    switch (actionId) {
-                        case "lookup":
-                            pickerField.addAction(actions.create(LookupAction.ID));
-                            break;
-
-                        case "open":
-                            pickerField.addAction(actions.create(OpenAction.ID));
-                            break;
-
-                        case "clear":
-                            pickerField.addAction(actions.create(ClearAction.ID));
-                            break;
-
-                        default:
-                            LoggerFactory.getLogger(GuiActionSupport.class)
-                                    .warn("Unsupported PickerField action type " + actionId);
-                            break;
-                    }
-                }
+                createActionById(pickerField, actionId);
             }
             return true;
         }
         return false;
+    }
+
+    public void createActionById(PickerField<?> pickerField, String actionId) {
+        if (isInLegacyScreen(pickerField)) {
+            // in legacy screens
+            for (PickerField.ActionType actionType : PickerField.ActionType.values()) {
+                if (actionType.getId().equals(actionId.trim())) {
+                    pickerField.addAction(actionType.createAction(pickerField));
+                    break;
+                }
+            }
+        } else {
+            switch (actionId) {
+                case "lookup":
+                    pickerField.addAction(actions.create(LookupAction.ID));
+                    break;
+
+                case "open":
+                    pickerField.addAction(actions.create(OpenAction.ID));
+                    break;
+
+                case "clear":
+                    pickerField.addAction(actions.create(ClearAction.ID));
+                    break;
+
+                default:
+                    LoggerFactory.getLogger(GuiActionSupport.class)
+                            .warn("Unsupported PickerField action type " + actionId);
+                    break;
+            }
+        }
+    }
+
+    protected boolean isInLegacyScreen(PickerField<?> pickerField) {
+        return pickerField.getFrame() != null
+                && pickerField.getFrame().getFrameOwner() instanceof LegacyFrame
+                || pickerField.getValueSource() instanceof DatasourceValueSource;
     }
 }

@@ -26,6 +26,7 @@ import com.haulmont.cuba.gui.Notifications.NotificationType;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ListAction;
 import com.haulmont.cuba.gui.components.data.meta.ContainerDataUnit;
+import com.haulmont.cuba.gui.export.ExcelExportFormat;
 import com.haulmont.cuba.gui.export.ExcelExporter;
 import com.haulmont.cuba.gui.export.ExportDisplay;
 import com.haulmont.cuba.gui.icons.CubaIcon;
@@ -45,7 +46,7 @@ import java.util.stream.Collectors;
  */
 @StudioAction(category = "List Actions", description = "Exports a list of entities to XLS file")
 @ActionType(ExcelAction.ID)
-public class ExcelAction extends ListAction {
+public class ExcelAction extends ListAction implements Action.ExecutableAction {
 
     public static final String ID = "excel";
 
@@ -58,6 +59,12 @@ public class ExcelAction extends ListAction {
      * If true and table is aggregatable will export aggregation row to excel document.
      */
     protected boolean exportAggregation = true;
+
+    /**
+     * Excel format used for export: xls or xlsx.
+     * By default the value is taken from setting {@link com.haulmont.cuba.client.ClientConfig#getDefaultExcelExportFormat()}
+     */
+    protected ExcelExportFormat exportFormat = ExcelExportFormat.DEFAULT;
 
     public ExcelAction() {
         super(ID);
@@ -95,6 +102,7 @@ public class ExcelAction extends ListAction {
     /**
      * Executes the action.
      */
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("ExcelAction target is not set");
@@ -163,11 +171,20 @@ public class ExcelAction extends ListAction {
         this.fileName = fileName;
     }
 
+    public ExcelExportFormat getExportFormat() {
+        return exportFormat;
+    }
+
+    @StudioPropertiesItem(defaultValue = "DEFAULT")
+    public void setExportFormat(ExcelExportFormat exportFormat) {
+        this.exportFormat = exportFormat;
+    }
+
     /**
      * Export via {@link ExcelExporter}.
      */
     protected void export(ExcelExporter.ExportMode exportMode) {
-        ExcelExporter exporter = new ExcelExporter();
+        ExcelExporter exporter = new ExcelExporter(exportFormat);
         exporter.setExportAggregation(exportAggregation);
 
         Window window = ComponentsHelper.getWindowNN(target);

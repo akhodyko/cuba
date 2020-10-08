@@ -293,15 +293,16 @@ public class UserEditor extends AbstractEditor<User> {
                 ((AbstractDatasource) rolesDs).getItemsToUpdate().remove(userRole);
                 ((AbstractDatasource) userDs).setModified(false);
             }
-            if (notExcludedUserRoles.containsKey(userRole.getRole().getName())) {
+            String roleName = userRole.getRole() != null ? userRole.getRole().getName() : userRole.getRoleName();
+            if (notExcludedUserRoles.containsKey(roleName)) {
                 if (userRole.getRoleName() != null) {
                     rolesDs.excludeItem(userRole);
                     continue;
                 } else {
-                    rolesDs.excludeItem(notExcludedUserRoles.get(userRole.getRole().getName()));
+                    rolesDs.excludeItem(notExcludedUserRoles.get(roleName));
                 }
             }
-            notExcludedUserRoles.put(userRole.getRole().getName(), userRole);
+            notExcludedUserRoles.put(roleName, userRole);
         }
     }
 
@@ -530,7 +531,7 @@ public class UserEditor extends AbstractEditor<User> {
         boolean isDsModified = rolesDs.isModified();
         Collection<UserRole> userRoles = new ArrayList<>(rolesDs.getItems());
         for (UserRole userRole : userRoles) {
-            if (userRole.getRole().isPredefined()) {
+            if (userRole.getRole() != null && userRole.getRole().isPredefined()) {
                 if (userRole.getRoleName() == null) {
                     userRole.setRoleName(userRole.getRole().getName());
                 }

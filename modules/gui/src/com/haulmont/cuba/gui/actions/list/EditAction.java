@@ -55,7 +55,8 @@ import static com.haulmont.cuba.gui.screen.FrameOwner.WINDOW_COMMIT_AND_CLOSE_AC
  */
 @StudioAction(category = "List Actions", description = "Edits an entity instance using its editor screen")
 @ActionType(EditAction.ID)
-public class EditAction<E extends Entity> extends SecuredListAction implements Action.DisabledWhenScreenReadOnly {
+public class EditAction<E extends Entity> extends SecuredListAction implements Action.AdjustWhenScreenReadOnly,
+        Action.ExecutableAction {
 
     public static final String ID = "edit";
 
@@ -274,6 +275,23 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
     }
 
     @Override
+    public boolean isDisabledWhenScreenReadOnly() {
+        if (!(target.getItems() instanceof EntityDataUnit)) {
+            return true;
+        }
+
+        MetaClass metaClass = ((EntityDataUnit) target.getItems()).getEntityMetaClass();
+        if (metaClass != null) {
+            // Even though the screen is read-only, this edit action may remain active
+            // because the related entity cannot be edited and the corresponding edit screen
+            // will be opened in read-only mode either.
+            return security.isEntityOpPermitted(metaClass, EntityOp.UPDATE);
+        }
+
+        return true;
+    }
+
+    @Override
     public void actionPerform(Component component) {
         // if standard behaviour
         if (!hasSubscriptions(ActionPerformedEvent.class)) {
@@ -287,6 +305,7 @@ public class EditAction<E extends Entity> extends SecuredListAction implements A
      * Executes the action.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
     public void execute() {
         if (target == null) {
             throw new IllegalStateException("EditAction target is not set");

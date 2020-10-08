@@ -24,4 +24,6 @@ public interface EnhancedUI {
     String getWebJarPath(String webjar, String partialPath);
 
     String translateToWebPath(String fullWebJarPath);
+
+    void setProfilerMarker(String profilerMarker);
 }

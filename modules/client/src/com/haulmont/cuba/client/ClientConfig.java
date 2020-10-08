@@ -436,4 +436,12 @@ public interface ClientConfig extends Config {
     @Source(type = SourceType.DATABASE)
     @DefaultBoolean(true)
     boolean getReloadUnfetchedAttributesFromLookupScreens();
+
+    /**
+     * Excel format (XLS or XLSX) that will be used by default for export
+     * @return ExcelExportFormat.XLS or ExcelExportFormat.XLSX value
+     */
+    @Property("cuba.gui.defaultExcelExportFormat")
+    @Default("XLSX")
+    String getDefaultExcelExportFormat();
 }
